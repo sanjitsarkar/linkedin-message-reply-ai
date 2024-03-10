@@ -1,0 +1,7 @@
+export const INITIAL_DATA_STATE =
+{
+  data: null,
+  loading: false,
+  error: null,
+}
+export const DUMMY_REPLY = "Thank you for the opportunity! If you have any more questions or if there's anything else I can help you with, feel free to ask."

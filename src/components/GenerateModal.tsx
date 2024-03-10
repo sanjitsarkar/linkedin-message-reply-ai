@@ -1,21 +1,18 @@
-import React, { useCallback, useEffect, useRef, useState } from "react"
+import React, { useEffect, useRef, useState } from "react"
 
 import InsertIcon from "~components/Icons/InsertIcon"
 import RegenerateIcon from "~components/Icons/RegenerateIcon"
 import SendIcon from "~components/Icons/SendIcon"
+import { useReply } from "~contexts/ReplyContext"
 
 const GenerateModal = ({ setGenerateModal, insertGeneratedReply }) => {
   const [chats, setChats] = useState([])
   const [input, setInput] = useState("")
   const endRef = useRef(null)
-
-  const generateReply = () => {
+  const { generateReplyWithAI, reply } = useReply()
+  const generateReply = async () => {
     if (!input) return
-
-    setInput("")
-    const reply =
-      "Thank you for the opportunity! If you have any more questions or if there's anything else I can help you with, feel free to ask."
-    setChats((prevChats) => [...prevChats, input, reply])
+    await generateReplyWithAI(input)
   }
 
   useEffect(() => {
@@ -23,6 +20,12 @@ const GenerateModal = ({ setGenerateModal, insertGeneratedReply }) => {
       endRef.current.scrollIntoView({ behavior: "smooth" })
     }
   }, [chats])
+  useEffect(() => {
+    if (!reply.loading && reply.data) {
+      setChats((prevChats) => [...prevChats, input, reply.data])
+      setInput("")
+    }
+  }, [reply])
 
   return (
     <div className="!fixed !top-0 !right-0 !left-0 !bottom-0 !z-50 !w-screen !h-screen !flex !items-center !justify-center">
@@ -58,17 +61,23 @@ const GenerateModal = ({ setGenerateModal, insertGeneratedReply }) => {
             </button>
           )}
           <button
-            disabled={!input}
+            disabled={!input || reply?.loading}
             onClick={generateReply}
             className="flex justify-center gap-2 py-2 px-4 bg-blue-600 rounded-md items-center text-white">
-            {chats.length ? (
-              <RegenerateIcon className="scale-75" />
+            {reply.loading ? (
+              <span className="text-2xl">Generating...</span>
             ) : (
-              <SendIcon className="scale-75" />
+              <>
+                {chats.length ? (
+                  <RegenerateIcon className="scale-75" />
+                ) : (
+                  <SendIcon className="scale-75" />
+                )}
+                <span className="text-2xl">
+                  {chats.length ? "Regenerate" : "Generate"}
+                </span>
+              </>
             )}
-            <span className="text-2xl">
-              {chats.length ? "Regenerate" : "Generate"}
-            </span>
           </button>
         </div>
       </div>

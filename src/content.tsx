@@ -1,6 +1,7 @@
 import cssText from "data-text:~style.css"
 import type { PlasmoCSConfig, PlasmoGetInlineAnchor } from "plasmo"
 
+import { ReplyProvider } from "~contexts/ReplyContext"
 import GenerateReply from "~features/GenerateReply"
 
 export const config: PlasmoCSConfig = {
@@ -18,9 +19,9 @@ export const getInlineAnchor: PlasmoGetInlineAnchor = () => {
 export const getShadowHostId = () => "content-script-ui"
 const ContentScriptUI = () => {
   return (
-    <>
+    <ReplyProvider>
       <GenerateReply />
-    </>
+    </ReplyProvider>
   )
 }
 
